@@ -520,8 +520,16 @@
     body { background: white; font-size: 12px; }
 
     /* Hide all UI chrome */
-    .app-header, .exp-bar, .btn-print, .btn-add-row,
+    .exp-bar, .btn-print, .btn-add-row,
     .mode-btn, .modal-overlay { display: none !important; }
+
+    /* App header prints in both versions */
+    .app-header {
+      position: static !important;
+      padding: 10px 24px !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
 
     .main { padding: 0; max-width: 100%; }
     .section { border: 1px solid #ccc; }
@@ -597,50 +605,73 @@
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
     /* ── BLANK FORM MODE ──────────────────────────────────────── */
-    /* Blank print-sub divs: show as ruled writing lines */
+
+    /* Blank header */
+    .blank-form-header { display: none; }
+    body.print-blank .blank-form-header {
+      display: block !important;
+      border-bottom: 2px solid #1a1a1a;
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+    }
+    .bfh-title {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .bfh-sub { font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 11px; color: #666; }
+    .bfh-meta { display: flex; gap: 16px; }
+    .bfh-field { display: flex; align-items: baseline; gap: 6px; flex: 1; }
+    .bfh-field-short { flex: 0 0 80px; }
+    .bfh-label { font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; color: #888; white-space: nowrap; }
+    .bfh-line { flex: 1; border-bottom: 1px solid #1a1a1a; height: 18px; }
+
+    /* Hide meta row inputs in blank mode */
+    body.print-blank .meta-row { display: none !important; }
+
+    /* Blank print-sub divs: writing lines */
     .print-sub.blank {
       background: white;
       border: none;
-      border-bottom: 1px solid #ccc;
+      border-bottom: 1px solid #bbb;
       border-radius: 0;
-      padding: 0;
-      margin-bottom: 4px;
-      color: transparent; /* content is empty; this hides any placeholder */
+      padding: 0 0 2px 0;
+      margin-bottom: 6px;
+      color: transparent;
+      min-height: 22px;
     }
-    /* Inline table blank cells */
     .print-sub.blank.inline {
       border: none;
-      border-bottom: 1px solid #ccc;
+      border-bottom: 1px solid #bbb;
       padding: 0;
-      min-height: 24px;
+      min-height: 22px;
     }
-    /* Ref card blank inputs */
     .print-sub-input.blank {
-      border-bottom: 1px solid #ccc;
-      min-height: 20px;
+      border-bottom: 1px solid #bbb;
+      min-height: 18px;
       display: block;
     }
-    /* In blank mode: suppress ref card image areas */
-    body.print-blank .ref-card-img,
-    body.print-blank .ref-card-upload { display: none !important; }
-    /* Ref card notes blank div gets more space */
-    body.print-blank .ref-card { break-inside: avoid; }
-    /* Hide URL field label and input in blank mode */
+
+    /* Tighter spacing in blank mode */
+    body.print-blank .field { margin-bottom: 6px !important; }
+    body.print-blank .section-body { padding: 10px 12px !important; }
+
+    /* Ref cards in blank mode */
+    body.print-blank .ref-card-preview { display: none !important; }
     body.print-blank .ref-url-row { display: none !important; }
-    /* Blank form header strip */
-    .blank-form-header {
-      display: none;
-    }
-    body.print-blank .blank-form-header {
-      display: block !important;
-      font-size: 10px;
-      color: #999;
-      text-align: right;
-      padding-bottom: 6px;
-      border-bottom: 1px solid #ddd;
-      margin-bottom: 12px;
-    }
-    /* Hide mode guide button and example banner in blank mode */
+    body.print-blank .ref-card { break-inside: avoid; }
+
+    /* Key Moments: hide digital workflow instructions, show backup note */
+    body.print-blank .km-instr { display: none !important; }
+    body.print-blank .km-instr-blank { display: block !important; }
+
+    /* Page break before Part 2 */
+    .page-break-before { break-before: page; }
+
+    /* Hide mode guide button, example banner in blank mode */
     body.print-blank .btn-mode-guide,
     body.print-blank .example-banner { display: none !important; }
   }
@@ -954,7 +985,14 @@
   <button class="btn-print" onclick="window.print()">Print / PDF</button>
 </div>
 
-<div class="blank-form-header">BCM303 Segment Brief — blank copy for studio backup</div>
+<div class="blank-form-header">
+  <div class="bfh-title">BCM303 — Segment Brief <span class="bfh-sub">studio backup copy</span></div>
+  <div class="bfh-meta">
+    <div class="bfh-field"><span class="bfh-label">GROUP</span><div class="bfh-line"></div></div>
+    <div class="bfh-field"><span class="bfh-label">MODE</span><div class="bfh-line"></div></div>
+    <div class="bfh-field bfh-field-short"><span class="bfh-label">WEEK</span><div class="bfh-line"></div></div>
+  </div>
+</div>
 
 <div class="meta-row">
   <div class="meta-field">
@@ -1192,7 +1230,7 @@
   <!-- ═══ PART 2 ═══════════════════════════════════════════ -->
   <hr class="part-divider">
 
-  <div class="phase-banner p2">
+  <div class="phase-banner p2 page-break-before">
     <div class="phase-num">2</div>
     <div class="phase-text">
       <h2>Complete before the studio session</h2>
@@ -1356,9 +1394,10 @@
   <div class="section">
     <div class="section-head"><h3>Key Moments &amp; Borrowed Looks</h3></div>
     <div class="section-body">
-      <p style="font-size:12px;color:var(--dim);font-style:italic;margin-bottom:8px;">Identify the key moments in your segment that need coverage. For each, find a still from an actual broadcast, show, or footage that demonstrates a specific camera or staging <em>decision</em> you want to borrow — a framing, a cut, a use of space. Not a mood image. A decision.</p>
-      <p style="font-size:12px;color:var(--dim);font-style:italic;margin-bottom:4px;">Take a screenshot, save it somewhere you can get a direct image URL from (Discord, Google Drive shared link, Imgur), then paste it into the URL field. It will load the preview automatically.</p>
-      <p style="font-size:12px;color:var(--mid);font-weight:500;margin-bottom:16px;">In the Notes field, name the decision: <em>"single camera, tight on face, held through the silence after the question"</em> — not <em>"intimate feeling."</em></p>
+      <p class="km-instr" style="font-size:12px;color:var(--dim);font-style:italic;margin-bottom:8px;">Identify the key moments in your segment that need coverage. For each, find a still from an actual broadcast, show, or footage that demonstrates a specific camera or staging <em>decision</em> you want to borrow — a framing, a cut, a use of space. Not a mood image. A decision.</p>
+      <p class="km-instr" style="font-size:12px;color:var(--dim);font-style:italic;margin-bottom:4px;">Take a screenshot, save it somewhere you can get a direct image URL from (Discord, Google Drive shared link, Imgur), then paste it into the URL field. It will load the preview automatically.</p>
+      <p class="km-instr" style="font-size:12px;color:var(--mid);font-weight:500;margin-bottom:16px;">In the Notes field, name the decision: <em>"single camera, tight on face, held through the silence after the question"</em> — not <em>"intimate feeling."</em></p>
+      <p class="km-instr-blank" style="display:none;font-size:11px;color:var(--dim);font-style:italic;margin-bottom:12px;">For each moment: name it, note the shot, describe the specific decision you want to borrow.</p>
       <div class="ref-grid" id="refGrid"></div>
     </div>
   </div>
