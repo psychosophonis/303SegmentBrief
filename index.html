@@ -123,6 +123,8 @@
     transition: all 0.15s;
   }
   .btn-print:hover { background: var(--ink); color: white; border-color: var(--ink); }
+  .btn-print-blank { color: var(--dim); }
+  .btn-print-blank:hover { background: var(--bg); color: var(--mid); border-color: var(--mid); }
 
   /* ── META ROW ─────────────────────────────────── */
   .meta-row {
@@ -592,6 +594,54 @@
 
     /* Two-col */
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* ── BLANK FORM MODE ──────────────────────────────────────── */
+    /* Blank print-sub divs: show as ruled writing lines */
+    .print-sub.blank {
+      background: white;
+      border: none;
+      border-bottom: 1px solid #ccc;
+      border-radius: 0;
+      padding: 0;
+      margin-bottom: 4px;
+      color: transparent; /* content is empty; this hides any placeholder */
+    }
+    /* Inline table blank cells */
+    .print-sub.blank.inline {
+      border: none;
+      border-bottom: 1px solid #ccc;
+      padding: 0;
+      min-height: 24px;
+    }
+    /* Ref card blank inputs */
+    .print-sub-input.blank {
+      border-bottom: 1px solid #ccc;
+      min-height: 20px;
+      display: block;
+    }
+    /* In blank mode: suppress ref card image areas */
+    body.print-blank .ref-card-img,
+    body.print-blank .ref-card-upload { display: none !important; }
+    /* Ref card notes blank div gets more space */
+    body.print-blank .ref-card { break-inside: avoid; }
+    /* Hide URL field label and input in blank mode */
+    body.print-blank .ref-url-row { display: none !important; }
+    /* Blank form header strip */
+    .blank-form-header {
+      display: none;
+    }
+    body.print-blank .blank-form-header {
+      display: block !important;
+      font-size: 10px;
+      color: #999;
+      text-align: right;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 12px;
+    }
+    /* Hide mode guide button and example banner in blank mode */
+    body.print-blank .btn-mode-guide,
+    body.print-blank .example-banner { display: none !important; }
   }
 
   /* ── INSTRUCTION PANEL ────────────────────────── */
@@ -899,8 +949,11 @@
     <span class="exp-mode" id="expMode3">Platform</span>
   </button>
   <div class="exp-bar-spacer"></div>
+  <button class="btn-print btn-print-blank" onclick="printBlankForm()">Print blank form</button>
   <button class="btn-print" onclick="window.print()">Print / PDF</button>
 </div>
+
+<div class="blank-form-header">BCM303 Segment Brief — blank copy for studio backup</div>
 
 <div class="meta-row">
   <div class="meta-field">
@@ -1482,9 +1535,11 @@ function buildRefGrid() {
         <div class="ref-card-body">
           <input type="text" id="ref_${i}_moment" placeholder="Moment: e.g. opening shot" oninput="saveField(this)">
           <input type="text" id="ref_${i}_shot" placeholder="Shot: e.g. Cam 2, wide 2-shot" oninput="saveField(this)">
+          <div class="ref-url-row">
           <input type="text" id="ref_${i}_url" class="ref-url" placeholder="Image URL — paste to load preview" oninput="saveField(this); loadRefImage(${i}, this.value)">
           <label class="ref-upload-label" for="ref_${i}_file">↑ or upload local file</label>
           <input type="file" accept="image/*" class="ref-upload-input" id="ref_${i}_file" onchange="loadLocalImage(${i}, this)">
+          </div>
           <textarea id="ref_${i}_notes" placeholder="Decision: what specific choice does this image show? Not a mood — a decision." style="min-height:36px;font-size:11px" oninput="saveField(this)"></textarea>
         </div>
       </div>`;
@@ -1635,13 +1690,79 @@ function restoreTextareas() {
     delete el.dataset.printSubstituted;
   });
 }
+// ── BLANK FORM PRINT ──────────────────────────────────────────
+const BLANK_HEIGHTS = {
+  // Part 1
+  f_logline: '52px', f_logline_delta: '36px',
+  f_segment: '88px', f_question: '60px',
+  f_authority: '80px', f_forabout: '80px', f_for: '60px', f_stakes: '80px',
+  f_collab_who: '56px', f_collab_brief: '80px',
+  // Crew (inline table)
+  crew_fd: '28px', crew_td: '28px', crew_c1: '28px', crew_c2: '28px',
+  crew_c3: '28px', crew_audio: '28px', crew_other: '28px',
+  // Part 2 — staging
+  f_feel: '60px', f_props: '72px', f_positions: '72px', f_audience: '60px',
+  // Camera (inline table)
+  cam1_pos:'52px',cam1_shots:'64px',cam1_moments:'64px',cam1_notes:'52px',
+  cam2_pos:'52px',cam2_shots:'64px',cam2_moments:'64px',cam2_notes:'52px',
+  cam3_pos:'52px',cam3_shots:'64px',cam3_moments:'64px',cam3_notes:'52px',
+  f_switcher: '56px',
+  // Audio (inline table)
+  audio_0_src:'32px',audio_0_mic:'32px',audio_0_notes:'32px',
+  audio_1_src:'32px',audio_1_mic:'32px',audio_1_notes:'32px',
+  audio_2_src:'32px',audio_2_mic:'32px',audio_2_notes:'32px',
+  audio_3_src:'32px',audio_3_mic:'32px',audio_3_notes:'32px',
+  audio_4_src:'32px',audio_4_mic:'32px',audio_4_notes:'32px',
+  audio_5_src:'32px',audio_5_mic:'32px',audio_5_notes:'32px',
+  f_assets: '68px', f_audio_risks: '56px',
+  // Running order — big
+  f_script_runorder: '220px',
+  // Ref card notes
+  ref_0_notes:'64px',ref_1_notes:'64px',ref_2_notes:'64px',
+  ref_3_notes:'64px',ref_4_notes:'64px',ref_5_notes:'64px',
+};
+
+function printBlankForm() {
+  // Insert blank substitute divs
+  document.querySelectorAll('textarea').forEach(ta => {
+    if (ta.dataset.printSubstituted) return;
+    const sub = document.createElement('div');
+    const isInline = !!ta.closest('td');
+    sub.className = 'print-sub blank' + (isInline ? ' inline' : '');
+    sub.style.minHeight = BLANK_HEIGHTS[ta.id] || (isInline ? '32px' : '56px');
+    sub.dataset.forTextarea = ta.id;
+    ta.parentNode.insertBefore(sub, ta.nextSibling);
+    ta.dataset.printSubstituted = 'true';
+  });
+  // Ref card text inputs (moment, shot — not URL)
+  document.querySelectorAll('.ref-card-body input[type="text"]').forEach(inp => {
+    if (inp.dataset.printSubstituted) return;
+    if (inp.classList.contains('ref-url')) return; // skip URL field
+    const sub = document.createElement('div');
+    sub.className = 'print-sub-input blank';
+    sub.style.minHeight = '20px';
+    inp.parentNode.insertBefore(sub, inp.nextSibling);
+    inp.dataset.printSubstituted = 'true';
+  });
+  document.body.classList.add('print-blank');
+  setTimeout(() => {
+    window.print();
+    // restore after print dialog closes
+    setTimeout(restoreTextareas, 500);
+  }, 50);
+}
+// afterprint removes print-blank class too
+const _origRestore = restoreTextareas;
+function restoreTextareas() {
+  _origRestore();
+  document.body.classList.remove('print-blank');
+}
+
 window.addEventListener('beforeprint', substituteTextareas);
 window.addEventListener('afterprint', restoreTextareas);
-// Also handle the print button path
-const origPrint = window.print.bind(window);
-// Override btn-print to substitute first
+// Override btn-print (filled print) to substitute first
 document.addEventListener('DOMContentLoaded', () => {
-  const btn = document.querySelector('.btn-print');
+  const btn = document.querySelector('.btn-print:not(.btn-print-blank)');
   if (btn) {
     btn.onclick = () => { substituteTextareas(); setTimeout(() => { window.print(); }, 50); };
   }
