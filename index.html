@@ -584,9 +584,10 @@
     .platform-box { break-inside: avoid; }
     .ref-card { break-inside: avoid; }
     .ref-grid { break-inside: avoid; }
-
-    /* Keep crew section head with its table */
-    .section:has(.crew-table) { break-inside: avoid; }
+    /* Keep section heads attached to their bodies */
+    .section-head { break-after: avoid; }
+    /* Running order: keep whole section together */
+    .section:has(#f_script_runorder) { break-inside: avoid; }
 
     /* Ref card input substitutes */
     .print-sub-input {
@@ -602,7 +603,7 @@
     .ref-card-body input[type="text"] { display: none !important; }
 
     /* Two-col */
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
 
     /* ── BLANK FORM MODE ──────────────────────────────────────── */
 
@@ -610,19 +611,10 @@
     .blank-form-header { display: none; }
     body.print-blank .blank-form-header {
       display: block !important;
-      border-bottom: 2px solid #1a1a1a;
-      padding-bottom: 10px;
-      margin-bottom: 14px;
+      border-bottom: 1px solid #bbb;
+      padding: 10px 0 10px 0;
+      margin-bottom: 12px;
     }
-    .bfh-title {
-      font-family: var(--mono);
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
-    .bfh-sub { font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 11px; color: #666; }
     .bfh-meta { display: flex; gap: 16px; }
     .bfh-field { display: flex; align-items: baseline; gap: 6px; flex: 1; }
     .bfh-field-short { flex: 0 0 80px; }
@@ -639,9 +631,9 @@
       border-bottom: 1px solid #bbb;
       border-radius: 0;
       padding: 0 0 2px 0;
-      margin-bottom: 6px;
+      margin-bottom: 0;
       color: transparent;
-      min-height: 22px;
+      min-height: 18px;
     }
     .print-sub.blank.inline {
       border: none;
@@ -656,8 +648,9 @@
     }
 
     /* Tighter spacing in blank mode */
-    body.print-blank .field { margin-bottom: 6px !important; }
-    body.print-blank .section-body { padding: 10px 12px !important; }
+    body.print-blank .field { margin-bottom: 5px !important; }
+    body.print-blank .section-body { padding: 8px 12px !important; }
+    body.print-blank .two-col { gap: 12px; }
 
     /* Ref cards in blank mode */
     body.print-blank .ref-card-preview { display: none !important; }
@@ -986,7 +979,6 @@
 </div>
 
 <div class="blank-form-header">
-  <div class="bfh-title">BCM303 — Segment Brief <span class="bfh-sub">studio backup copy</span></div>
   <div class="bfh-meta">
     <div class="bfh-field"><span class="bfh-label">GROUP</span><div class="bfh-line"></div></div>
     <div class="bfh-field"><span class="bfh-label">MODE</span><div class="bfh-line"></div></div>
@@ -1228,9 +1220,9 @@
   </div>
 
   <!-- ═══ PART 2 ═══════════════════════════════════════════ -->
-  <hr class="part-divider">
+  <hr class="part-divider page-break-before">
 
-  <div class="phase-banner p2 page-break-before">
+  <div class="phase-banner p2">
     <div class="phase-num">2</div>
     <div class="phase-text">
       <h2>Complete before the studio session</h2>
@@ -1698,8 +1690,8 @@ document.addEventListener('keydown', e => {
 
 
 // ── PRINT: swap textareas for plain divs so content doesn't clip ──
+// ── PRINT HELPERS ────────────────────────────────────────────
 function substituteTextareas() {
-  // Substitute textareas everywhere
   document.querySelectorAll('textarea').forEach(ta => {
     if (ta.dataset.printSubstituted) return;
     const sub = document.createElement('div');
@@ -1709,7 +1701,6 @@ function substituteTextareas() {
     ta.parentNode.insertBefore(sub, ta.nextSibling);
     ta.dataset.printSubstituted = 'true';
   });
-  // Also substitute text inputs inside ref cards (moment, shot, notes)
   document.querySelectorAll('.ref-card-body input[type="text"]').forEach(inp => {
     if (inp.dataset.printSubstituted) return;
     const sub = document.createElement('div');
@@ -1719,32 +1710,33 @@ function substituteTextareas() {
     inp.dataset.printSubstituted = 'true';
   });
 }
-function restoreTextareas() {
-  document.querySelectorAll('.print-sub, .print-sub-input').forEach(sub => {
-    sub.remove();
-  });
+
+function restoreAfterPrint() {
+  document.querySelectorAll('.print-sub, .print-sub-input').forEach(sub => sub.remove());
   document.querySelectorAll('[data-print-substituted]').forEach(el => {
     delete el.dataset.printSubstituted;
   });
+  document.body.classList.remove('print-blank');
 }
+
+function cleanSubstitute() {
+  restoreAfterPrint();
+  substituteTextareas();
+}
+
 // ── BLANK FORM PRINT ──────────────────────────────────────────
 const BLANK_HEIGHTS = {
-  // Part 1
   f_logline: '52px', f_logline_delta: '36px',
   f_segment: '88px', f_question: '60px',
   f_authority: '80px', f_forabout: '80px', f_for: '60px', f_stakes: '80px',
   f_collab_who: '56px', f_collab_brief: '80px',
-  // Crew (inline table)
   crew_fd: '28px', crew_td: '28px', crew_c1: '28px', crew_c2: '28px',
   crew_c3: '28px', crew_audio: '28px', crew_other: '28px',
-  // Part 2 — staging
   f_feel: '60px', f_props: '72px', f_positions: '72px', f_audience: '60px',
-  // Camera (inline table)
   cam1_pos:'52px',cam1_shots:'64px',cam1_moments:'64px',cam1_notes:'52px',
   cam2_pos:'52px',cam2_shots:'64px',cam2_moments:'64px',cam2_notes:'52px',
   cam3_pos:'52px',cam3_shots:'64px',cam3_moments:'64px',cam3_notes:'52px',
   f_switcher: '56px',
-  // Audio (inline table)
   audio_0_src:'32px',audio_0_mic:'32px',audio_0_notes:'32px',
   audio_1_src:'32px',audio_1_mic:'32px',audio_1_notes:'32px',
   audio_2_src:'32px',audio_2_mic:'32px',audio_2_notes:'32px',
@@ -1752,17 +1744,14 @@ const BLANK_HEIGHTS = {
   audio_4_src:'32px',audio_4_mic:'32px',audio_4_notes:'32px',
   audio_5_src:'32px',audio_5_mic:'32px',audio_5_notes:'32px',
   f_assets: '68px',
-  // Running order — big
   f_script_runorder: '220px',
-  // Ref card notes
   ref_0_notes:'64px',ref_1_notes:'64px',ref_2_notes:'64px',
   ref_3_notes:'64px',ref_4_notes:'64px',ref_5_notes:'64px',
 };
 
 function printBlankForm() {
-  // Insert blank substitute divs
+  restoreAfterPrint();
   document.querySelectorAll('textarea').forEach(ta => {
-    if (ta.dataset.printSubstituted) return;
     const sub = document.createElement('div');
     const isInline = !!ta.closest('td');
     sub.className = 'print-sub blank' + (isInline ? ' inline' : '');
@@ -1771,10 +1760,8 @@ function printBlankForm() {
     ta.parentNode.insertBefore(sub, ta.nextSibling);
     ta.dataset.printSubstituted = 'true';
   });
-  // Ref card text inputs (moment, shot — not URL)
   document.querySelectorAll('.ref-card-body input[type="text"]').forEach(inp => {
-    if (inp.dataset.printSubstituted) return;
-    if (inp.classList.contains('ref-url')) return; // skip URL field
+    if (inp.classList.contains('ref-url')) return;
     const sub = document.createElement('div');
     sub.className = 'print-sub-input blank';
     sub.style.minHeight = '20px';
@@ -1782,26 +1769,16 @@ function printBlankForm() {
     inp.dataset.printSubstituted = 'true';
   });
   document.body.classList.add('print-blank');
-  setTimeout(() => {
-    window.print();
-    // restore after print dialog closes
-    setTimeout(restoreTextareas, 500);
-  }, 50);
-}
-// afterprint removes print-blank class too
-const _origRestore = restoreTextareas;
-function restoreTextareas() {
-  _origRestore();
-  document.body.classList.remove('print-blank');
+  setTimeout(() => { window.print(); }, 50);
 }
 
 window.addEventListener('beforeprint', substituteTextareas);
-window.addEventListener('afterprint', restoreTextareas);
-// Override btn-print (filled print) to substitute first
+window.addEventListener('afterprint', restoreAfterPrint);
+
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.querySelector('.btn-print:not(.btn-print-blank)');
   if (btn) {
-    btn.onclick = () => { substituteTextareas(); setTimeout(() => { window.print(); }, 50); };
+    btn.onclick = () => { cleanSubstitute(); setTimeout(() => { window.print(); }, 50); };
   }
 });
 
