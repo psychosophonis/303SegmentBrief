@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BCM303 — Segment Brief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0f0f;
+    --mid: #555;
+    --dim: #888;
+    --rule: #ddd;
+    --bg: #f7f6f3;
+    --card: #ffffff;
+    --accent: #0f0f0f;
+    --phase1: #0f0f0f;
+    --phase2: #2a4a6b;
+    --phase1-light: #f0eeeb;
+    --phase2-light: #eef2f7;
+    --warn: #c0392b;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+    --radius: 3px;
+    --saved-flash: #2ecc71;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ───────────────────────────────────── */
+  .app-header {
+    background: var(--ink);
+    color: white;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .app-header h1 {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .save-indicator {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    transition: color 0.3s;
+  }
+  .save-indicator.saved { color: var(--saved-flash); }
+
+  /* ── EXPERIMENT SWITCHER ──────────────────────── */
+  .exp-bar {
+    background: white;
+    border-bottom: 1px solid var(--rule);
+    padding: 0 24px;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+  }
+  .exp-tab {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 14px 20px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: var(--dim);
+    border-bottom: 3px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+  }
+  .exp-tab:hover { color: var(--ink); }
+  .exp-tab.active {
+    color: var(--ink);
+    border-bottom-color: var(--ink);
+  }
+  .exp-tab .exp-mode {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--dim);
+    display: block;
+    margin-top: 1px;
+  }
+  .exp-tab.active .exp-mode { color: var(--mid); }
+  .exp-bar-spacer { flex: 1; }
+  .btn-print {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 8px 14px;
+    background: none;
+    border: 1px solid var(--rule);
+    color: var(--mid);
+    cursor: pointer;
+    border-radius: var(--radius);
+    align-self: center;
+    transition: all 0.15s;
+  }
+  .btn-print:hover { background: var(--ink); color: white; border-color: var(--ink); }
+
+  /* ── META ROW ─────────────────────────────────── */
+  .meta-row {
+    background: white;
+    border-bottom: 1px solid var(--rule);
+    padding: 12px 24px;
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .meta-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 200px;
+  }
+  .meta-field label {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--dim);
+    white-space: nowrap;
+  }
+  .meta-field input {
+    flex: 1;
+    border: none;
+    border-bottom: 1.5px solid var(--rule);
+    background: none;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    padding: 4px 0;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .meta-field input:focus { border-bottom-color: var(--ink); }
+
+  /* ── MAIN LAYOUT ──────────────────────────────── */
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 24px 80px;
+  }
+
+  /* ── PHASE BANNER ─────────────────────────────── */
+  .phase-banner {
+    padding: 14px 20px;
+    margin-bottom: 24px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .phase-banner.p1 { background: var(--phase1); }
+  .phase-banner.p2 { background: var(--phase2); }
+  .phase-num {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.2);
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .phase-text h2 {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: white;
+    margin-bottom: 2px;
+  }
+  .phase-text p {
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    font-style: italic;
+  }
+
+  /* ── SECTION ──────────────────────────────────── */
+  .section {
+    margin-bottom: 28px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .section-head {
+    padding: 10px 16px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-head h3 {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--mid);
+  }
+  .section-body { padding: 16px; }
+
+  /* ── FIELD ────────────────────────────────────── */
+  .field { margin-bottom: 18px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label {
+    display: block;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .field .hint {
+    font-size: 12px;
+    color: var(--dim);
+    font-style: italic;
+    margin-bottom: 6px;
+  }
+  .field textarea, .field input[type="text"] {
+    width: 100%;
+    border: 1.5px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink);
+    background: white;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.15s;
+    line-height: 1.6;
+  }
+  .field textarea:focus, .field input[type="text"]:focus {
+    border-color: var(--ink);
+  }
+  .field textarea { min-height: 72px; }
+  .field textarea.short { min-height: 50px; }
+  .field textarea.tall { min-height: 110px; }
+
+  /* ── TWO COLUMNS ──────────────────────────────── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 680px) {
+    .two-col { grid-template-columns: 1fr; }
+  }
+
+  /* ── CAMERA TABLE ─────────────────────────────── */
+  .cam-table { width: 100%; border-collapse: collapse; }
+  .cam-table th {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: white;
+    background: var(--ink);
+    padding: 8px 10px;
+    text-align: left;
+  }
+  .cam-table td {
+    border: 1px solid var(--rule);
+    padding: 6px;
+    vertical-align: top;
+  }
+  .cam-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--mid);
+    background: var(--bg);
+    padding: 6px 10px;
+    text-align: center;
+    border: 1px solid var(--rule);
+    white-space: nowrap;
+  }
+  .cam-table td textarea {
+    width: 100%;
+    border: none;
+    background: none;
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--ink);
+    resize: none;
+    outline: none;
+    min-height: 60px;
+    line-height: 1.5;
+  }
+
+  /* ── AUDIO TABLE ──────────────────────────────── */
+  .audio-table { width: 100%; border-collapse: collapse; }
+  .audio-table th {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: white;
+    background: var(--ink);
+    padding: 8px 10px;
+    text-align: left;
+  }
+  .audio-table td {
+    border: 1px solid var(--rule);
+    padding: 6px;
+    vertical-align: top;
+  }
+  .audio-table td textarea {
+    width: 100%;
+    border: none;
+    background: none;
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--ink);
+    resize: none;
+    outline: none;
+    min-height: 48px;
+    line-height: 1.5;
+  }
+  .btn-add-row {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--dim);
+    background: none;
+    border: 1px dashed var(--rule);
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: var(--radius);
+    margin-top: 8px;
+    transition: all 0.15s;
+    width: 100%;
+  }
+  .btn-add-row:hover { border-color: var(--ink); color: var(--ink); }
+
+  /* ── CREW TABLE ───────────────────────────────── */
+  .crew-table { width: 100%; border-collapse: collapse; }
+  .crew-table th {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: white;
+    background: var(--ink);
+    padding: 8px 10px;
+    text-align: left;
+  }
+  .crew-table td {
+    border: 1px solid var(--rule);
+    padding: 6px 10px;
+    vertical-align: middle;
+  }
+  .crew-role {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--mid);
+    background: var(--bg);
+    width: 200px;
+  }
+  .crew-table td input {
+    width: 100%;
+    border: none;
+    background: none;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+  }
+
+  /* ── REFERENCES GRID ──────────────────────────── */
+  .ref-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 680px) {
+    .ref-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .ref-card {
+    border: 1.5px solid var(--rule);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .ref-card-preview {
+    height: 100px;
+    background: var(--bg);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ref-card-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+  }
+  .ref-card-preview img.loaded { display: block; }
+  .ref-card-preview .no-image {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--rule);
+    text-align: center;
+    padding: 8px;
+  }
+  .ref-card-body { padding: 8px; display: flex; flex-direction: column; gap: 5px; flex: 1; }
+  .ref-card-body input, .ref-card-body textarea {
+    border: none;
+    border-bottom: 1px solid var(--rule);
+    background: none;
+    font-family: var(--sans);
+    font-size: 11px;
+    color: var(--ink);
+    outline: none;
+    width: 100%;
+    padding: 3px 0;
+    resize: none;
+    line-height: 1.4;
+  }
+  .ref-card-body input::placeholder, .ref-card-body textarea::placeholder {
+    color: var(--rule);
+  }
+  .ref-card-body .ref-url {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--dim);
+  }
+
+  /* ── PLATFORM BOX ─────────────────────────────── */
+  .platform-box {
+    border: 1.5px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    background: var(--phase1-light);
+  }
+  .platform-box .platform-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--mid);
+    margin-bottom: 10px;
+  }
+  .platform-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--mid);
+    font-style: italic;
+  }
+  .platform-check input[type="checkbox"] { accent-color: var(--ink); width: 14px; height: 14px; }
+
+  /* ── NOTICE BOX ───────────────────────────────── */
+  .notice {
+    background: var(--bg);
+    border-left: 3px solid var(--ink);
+    padding: 10px 14px;
+    margin-top: 20px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .notice strong {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .notice p { font-size: 12px; color: var(--mid); margin-top: 3px; }
+
+  /* ── DIVIDER ──────────────────────────────────── */
+  .part-divider {
+    border: none;
+    border-top: 2px solid var(--rule);
+    margin: 36px 0 28px;
+  }
+
+  /* ── PRINT ────────────────────────────────────── */
+  @media print {
+    body { background: white; font-size: 12px; }
+    .app-header, .exp-bar, .btn-print, .btn-add-row { display: none !important; }
+    .main { padding: 0; max-width: 100%; }
+    .section { break-inside: avoid; border: 1px solid #ccc; }
+    textarea, input { border-color: #ccc !important; }
+    .phase-banner.p1 { background: #1a1a1a !important; -webkit-print-color-adjust: exact; }
+    .phase-banner.p2 { background: #2a4a6b !important; -webkit-print-color-adjust: exact; }
+  }
+
+  /* ── INSTRUCTION PANEL ────────────────────────── */
+  .instr-panel {
+    background: white;
+    border-bottom: 1px solid var(--rule);
+  }
+  .instr-toggle {
+    width: 100%;
+    padding: 10px 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--mid);
+    transition: color 0.15s;
+  }
+  .instr-toggle:hover { color: var(--ink); }
+  .instr-toggle-left { display: flex; align-items: center; gap: 8px; }
+  .instr-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #f0b429;
+    flex-shrink: 0;
+  }
+  .instr-chevron {
+    font-size: 14px;
+    color: var(--dim);
+    transition: transform 0.2s;
+    line-height: 1;
+  }
+  .instr-panel.open .instr-chevron { transform: rotate(180deg); }
+  .instr-body {
+    display: none;
+    padding: 0 24px 20px;
+    border-top: 1px solid var(--rule);
+  }
+  .instr-panel.open .instr-body { display: block; }
+  .instr-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+  }
+  @media (max-width: 680px) {
+    .instr-steps { grid-template-columns: 1fr; }
+  }
+  .instr-step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .instr-n {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--rule);
+    line-height: 1.2;
+    flex-shrink: 0;
+    width: 24px;
+  }
+  .instr-step-text h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 3px;
+  }
+  .instr-step-text p {
+    font-size: 12px;
+    color: var(--mid);
+    line-height: 1.5;
+  }
+  .instr-note {
+    margin-top: 16px;
+    padding: 10px 14px;
+    background: var(--bg);
+    border-left: 3px solid var(--rule);
+    font-size: 12px;
+    color: var(--mid);
+    font-style: italic;
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .instr-dismiss {
+    margin-top: 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--dim);
+    background: none;
+    border: 1px solid var(--rule);
+    padding: 5px 12px;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: all 0.15s;
+  }
+  .instr-dismiss:hover { border-color: var(--ink); color: var(--ink); }
+  @media print { .instr-panel { display: none !important; } }
+
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <h1>BCM303 — Segment Brief &amp; Production Plan</h1>
+  <div class="header-right">
+    <span class="save-indicator" id="saveIndicator">—</span>
+  </div>
+</header>
+
+<div class="exp-bar">
+  <button class="exp-tab active" data-exp="0" onclick="switchExp(0)">
+    Experiment 1
+    <span class="exp-mode" id="expMode0">—</span>
+  </button>
+  <button class="exp-tab" data-exp="1" onclick="switchExp(1)">
+    Experiment 2
+    <span class="exp-mode" id="expMode1">—</span>
+  </button>
+  <button class="exp-tab" data-exp="2" onclick="switchExp(2)">
+    Experiment 3
+    <span class="exp-mode" id="expMode2">—</span>
+  </button>
+  <div class="exp-bar-spacer"></div>
+  <button class="btn-print" onclick="window.print()">Print / PDF</button>
+</div>
+
+<div class="meta-row">
+  <div class="meta-field">
+    <label>Group</label>
+    <input type="text" id="metaGroup" placeholder="your group name — type it here to load your data" oninput="saveField(this)">
+  </div>
+  <div class="meta-field">
+    <label>Mode</label>
+    <input type="text" id="metaMode" placeholder="Platform / Performance / Participation / Discourse" oninput="saveMeta(); updateModeTab()">
+  </div>
+  <div class="meta-field">
+    <label>Week</label>
+    <input type="text" id="metaWeek" placeholder="3 / 5 / 7" oninput="saveMeta()">
+  </div>
+</div>
+
+
+<div class="instr-panel" id="instrPanel">
+  <button class="instr-toggle" onclick="toggleInstr()">
+    <span class="instr-toggle-left">
+      <span class="instr-dot"></span>
+      How this works — read before you start
+    </span>
+    <span class="instr-chevron">&#8964;</span>
+  </button>
+  <div class="instr-body">
+    <div class="instr-steps">
+      <div class="instr-step">
+        <div class="instr-n">1</div>
+        <div class="instr-step-text">
+          <h4>Type your group name first</h4>
+          <p>Everything you enter is saved under your group name. Type the same name next time and your data loads automatically. Spell it the same way each time.</p>
+        </div>
+      </div>
+      <div class="instr-step">
+        <div class="instr-n">2</div>
+        <div class="instr-step-text">
+          <h4>Use the same device and browser</h4>
+          <p>Data is stored in your browser on this device. Switching to your phone or a different browser means starting fresh. One device per group is simplest.</p>
+        </div>
+      </div>
+      <div class="instr-step">
+        <div class="instr-n">3</div>
+        <div class="instr-step-text">
+          <h4>Print to PDF at the end of every session</h4>
+          <p>Use the Print / PDF button above, or Cmd+P / Ctrl+P. Do this at the end of every workshop session and again before the studio session. Don't rely on the browser to hold your data.</p>
+        </div>
+      </div>
+    </div>
+    <div class="instr-note">Each group's data is stored separately — multiple groups can use this site at the same time without affecting each other.</div>
+    <button class="instr-dismiss" onclick="dismissInstr()">Got it — don't show this again</button>
+  </div>
+</div>
+
+<main class="main" id="mainContent">
+
+  <!-- ═══ PART 1 ═══════════════════════════════════════════ -->
+  <div class="phase-banner p1">
+    <div class="phase-num">1</div>
+    <div class="phase-text">
+      <h2>Complete in the workshop</h2>
+      <p>The segment brief. Get this right in the room before you leave.</p>
+    </div>
+  </div>
+
+  <!-- LOGLINE -->
+  <div class="section">
+    <div class="section-head"><h3>Logline</h3></div>
+    <div class="section-body">
+      <div class="field">
+        <label>One sentence: what happens in this segment, and why would someone outside this room care?</label>
+        <div class="hint">If you can't write this, you don't know what your segment is yet. That's the conversation to have now.</div>
+        <textarea id="f_logline" rows="2" class="short" oninput="saveField(this)"></textarea>
+      </div>
+      <div class="field">
+        <label>What has changed since your last version — or what is this for the first time?</label>
+        <textarea id="f_logline_delta" rows="2" class="short" oninput="saveField(this)"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEGMENT -->
+  <div class="section">
+    <div class="section-head"><h3>The Segment</h3></div>
+    <div class="section-body">
+      <div class="field">
+        <label>Beginning, middle, end — three sentences maximum</label>
+        <textarea id="f_segment" rows="3" oninput="saveField(this)"></textarea>
+      </div>
+      <div class="field">
+        <label>What are we genuinely trying to find out?</label>
+        <div class="hint">Not 'whether it works.' What specific question does this experiment need to answer?</div>
+        <textarea id="f_question" rows="2" class="short" oninput="saveField(this)"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTHORITY -->
+  <div class="section">
+    <div class="section-head"><h3>Authority &amp; Relationship</h3></div>
+    <div class="section-body">
+      <p style="font-size:12px;color:var(--dim);font-style:italic;margin-bottom:14px;">Before you think about cameras, think about this. These questions are the ground the production stands on.</p>
+      <div class="two-col">
+        <div class="field">
+          <label>Where does the authority to make this come from?</label>
+          <div class="hint">Is it inside the group, or do you need to go somewhere else to find it?</div>
+          <textarea id="f_authority" oninput="saveField(this)"></textarea>
+        </div>
+        <div class="field">
+          <label>For someone, or about them?</label>
+          <div class="hint">Is there a real person or community outside this room who would recognise themselves in it? What's the difference in your case?</div>
+          <textarea id="f_forabout" oninput="saveField(this)"></textarea>
+        </div>
+        <div class="field">
+          <label>Who are you making this for?</label>
+          <textarea id="f_for" class="short" oninput="saveField(this)"></textarea>
+        </div>
+        <div class="field">
+          <label>What changes by the end?</label>
+          <div class="hint">For the subject, the audience, the room. What's actually at stake?</div>
+          <textarea id="f_stakes" class="short" oninput="saveField(this)"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLATFORM -->
+  <div class="section">
+    <div class="section-head"><h3>Platform Mode — if applicable</h3></div>
+    <div class="section-body">
+      <p style="font-size:12px;color:var(--dim);font-style:italic;margin-bottom:14px;">The pre-session relationship is the work. If it hasn't happened yet, Platform cannot happen in the studio session.</p>
+      <div class="platform-box">
+        <div class="platform-label">Collaborator confirmation</div>
+        <div class="two-col">
+          <div class="field">
+            <label>Collaborator's name and what they're bringing</label>
+            <textarea id="f_collab_who" class="short" oninput="saveField(this)"></textarea>
+          </div>
+          <div class="field">
+            <label>Have they been briefed on the session?</label>
+            <div class="hint">Live stream, studio, crew, what you're asking of them — this conversation needs to happen before the studio session.</div>
+            <textarea id="f_collab_brief" class="short" oninput="saveField(this)"></textarea>
+          </div>
+        </div>
+        <label class="platform-check">
+          <input type="checkbox" id="f_collab_confirmed" onchange="saveField(this)">
+          Collaborator has been briefed and confirmed for the session
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREW -->
+  <div class="section">
+    <div class="section-head"><h3>Crew — provisional</h3></div>
+    <div class="section-body">
+      <p style="font-size:12px;color:var(--dim);font-style:italic;margin-bottom:12px;">Who in your group is doing what? You'll also direct crew from the rest of the class.</p>
+      <table class="crew-table">
+        <thead>
+          <tr><th style="width:200px">Role</th><th>Name + brief note</th></tr>
+        </thead>
+        <tbody id="crewBody">
+          <tr><td class="crew-role">Floor director</td><td><input type="text" id="crew_fd" oninput="saveField(this)"></td></tr>
+          <tr><td class="crew-role">Technical director</td><td><input type="text" id="crew_td" oninput="saveField(this)"></td></tr>
+          <tr><td class="crew-role">Camera 1</td><td><input type="text" id="crew_c1" oninput="saveField(this)"></td></tr>
+          <tr><td class="crew-role">Camera 2</td><td><input type="text" id="crew_c2" oninput="saveField(this)"></td></tr>
+          <tr><td class="crew-role">Camera 3</td><td><input type="text" id="crew_c3" oninput="saveField(this)"></td></tr>
+          <tr><td class="crew-role">Audio</td><td><input type="text" id="crew_audio" oninput="saveField(this)"></td></tr>
+          <tr><td class="crew-role">Other</td><td><input type="text" id="crew_other" oninput="saveField(this)"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="notice">
+    <strong>Before you leave today →</strong>
+    <p>Post this brief to your Discord channel. Watch your pitch recording back. Note one thing you noticed that you couldn't see in the room.</p>
+  </div>
+
+  <!-- ═══ PART 2 ═══════════════════════════════════════════ -->
+  <hr class="part-divider">
+
+  <div class="phase-banner p2">
+    <div class="phase-num">2</div>
+    <div class="phase-text">
+      <h2>Complete before the studio session</h2>
+      <p>Production planning. This is your brief to yourself and the crew you'll be directing.</p>
+    </div>
+  </div>
+
+  <!-- STAGING -->
+  <div class="section">
+    <div class="section-head"><h3>Set &amp; Staging</h3></div>
+    <div class="section-body">
+      <p style="font-size:12px;color:var(--dim);font-style:italic;margin-bottom:14px;">The studio is a blank space. What does your segment need it to be?</p>
+      <div class="two-col">
+        <div class="field">
+          <label>What does the space need to feel like?</label>
+          <div class="hint">Intimate, exposed, casual, formal, bare — pick a word and justify it.</div>
+          <textarea id="f_feel" class="short" oninput="saveField(this)"></textarea>
+        </div>
+        <div class="field">
+          <label>What do you need in the room?</label>
+          <div class="hint">Furniture, objects, backdrop, props. Be specific.</div>
+          <textarea id="f_props" class="short" oninput="saveField(this)"></textarea>
+        </div>
+        <div class="field">
+          <label>Where does talent / guest sit or stand?</label>
+          <div class="hint">Describe positions relative to the camera line.</div>
+          <textarea id="f_positions" oninput="saveField(this)"></textarea>
+        </div>
+        <div class="field">
+          <label>Where is the audience?</label>
+          <div class="hint">Studio audience, guests, participants — where are they, and what role do they play in frame?</div>
+          <textarea id="f_audience" oninput="saveField(this)"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAMERAS -->
+  <div class="section">
+    <div class="section-head"><h3>Camera Plan</h3></div>
+    <div class="section-body">
+      <p style="font-size:12px;color:var(--dim);font-style:italic;margin-bottom:12px;">Three cameras, a switcher, a director calling cuts. Decide what each camera is doing — the live edit follows this plan.</p>
+      <div style="overflow-x:auto">
+        <table class="cam-table">
+          <thead>
+            <tr>
+              <th style="width:70px">Camera</th>
+              <th>Position in studio</th>
+              <th>Primary shots</th>
+              <th>Key moments to cover</th>
+              <th>Operator notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="cam-label">CAM 1</td>
+              <td><textarea id="cam1_pos" oninput="saveField(this)"></textarea></td>
+              <td><textarea id="cam1_shots" oninput="saveField(this)"></textarea></td>
+              <td><textarea id="cam1_moments" oninput="saveField(this)"></textarea></td>
+              <td><textarea id="cam1_notes" oninput="saveField(this)"></textarea></td>
+            </tr>
+            <tr>
+              <td class="cam-label">CAM 2</td>
+              <td><textarea id="cam2_pos" oninput="saveField(this)"></textarea></td>
+              <td><textarea id="cam2_shots" oninput="saveField(this)"></textarea></td>
+              <td><textarea id="cam2_moments" oninput="saveField(this)"></textarea></td>
+              <td><textarea id="cam2_notes" oninput="saveField(this)"></textarea></td>
+            </tr>
+            <tr>
+              <td class="cam-label">CAM 3</td>
+              <td><textarea id="cam3_pos" oninput="saveField(this)"></textarea></td>
+              <td><textarea id="cam3_shots" oninput="saveField(this)"></textarea></td>
+              <td><textarea id="cam3_moments" oninput="saveField(this)"></textarea></td>
+              <td><textarea id="cam3_notes" oninput="saveField(this)"></textarea></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="field" style="margin-top:12px">
+        <label>Switcher notes — default cut rhythm; moments that need a hold</label>
+        <textarea id="f_switcher" class="short" oninput="saveField(this)"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUDIO -->
+  <div class="section">
+    <div class="section-head"><h3>Audio</h3></div>
+    <div class="section-body">
+      <p style="font-size:12px;color:var(--dim);font-style:italic;margin-bottom:12px;">Clean audio matters more than picture quality. Plan this before you walk in.</p>
+      <div style="overflow-x:auto">
+        <table class="audio-table" id="audioTable">
+          <thead>
+            <tr>
+              <th style="width:30%">Sound source</th>
+              <th style="width:35%">Mic / pickup method</th>
+              <th>Notes / risks</th>
+            </tr>
+          </thead>
+          <tbody id="audioBody">
+            <tr>
+              <td><textarea id="audio_0_src" placeholder="e.g. interview guest" oninput="saveField(this)"></textarea></td>
+              <td><textarea id="audio_0_mic" placeholder="e.g. lapel mic" oninput="saveField(this)"></textarea></td>
+              <td><textarea id="audio_0_notes" oninput="saveField(this)"></textarea></td>
+            </tr>
+            <tr>
+              <td><textarea id="audio_1_src" oninput="saveField(this)"></textarea></td>
+              <td><textarea id="audio_1_mic" oninput="saveField(this)"></textarea></td>
+              <td><textarea id="audio_1_notes" oninput="saveField(this)"></textarea></td>
+            </tr>
+            <tr>
+              <td><textarea id="audio_2_src" oninput="saveField(this)"></textarea></td>
+              <td><textarea id="audio_2_mic" oninput="saveField(this)"></textarea></td>
+              <td><textarea id="audio_2_notes" oninput="saveField(this)"></textarea></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="field" style="margin-top:12px">
+        <label>Audio risks — what could go wrong, and what is the contingency?</label>
+        <textarea id="f_audio_risks" class="short" oninput="saveField(this)"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFERENCES -->
+  <div class="section">
+    <div class="section-head"><h3>Key Moments &amp; Borrowed Looks</h3></div>
+    <div class="section-body">
+      <p style="font-size:12px;color:var(--dim);font-style:italic;margin-bottom:8px;">Identify the key moments in your segment that need coverage. For each, paste an image URL to show the framing, composition, or energy you're going for — a still from a show, a screenshot from the Discord resources channel, anything that captures the look.</p>
+      <p style="font-size:12px;color:var(--dim);font-style:italic;margin-bottom:16px;">Paste any image URL into the URL field — it will load the preview automatically.</p>
+      <div class="ref-grid" id="refGrid"></div>
+    </div>
+  </div>
+
+  <div class="notice">
+    <strong>Before the studio session →</strong>
+    <p>Post your completed plan to your Discord channel. It is the brief for the crew you'll be directing. If Platform hasn't been confirmed, that conversation needs to happen now.</p>
+  </div>
+
+</main>
+
+<script>
+// ── STATE ─────────────────────────────────────────────────────
+let currentExp = 0;
+const NUM_REFS = 6;
+const FIELD_IDS = [
+  'metaGroup','metaMode','metaWeek',
+  'f_logline','f_logline_delta','f_segment','f_question',
+  'f_authority','f_forabout','f_for','f_stakes',
+  'f_collab_who','f_collab_brief','f_collab_confirmed',
+  'crew_fd','crew_td','crew_c1','crew_c2','crew_c3','crew_audio','crew_other',
+  'f_feel','f_props','f_positions','f_audience',
+  'cam1_pos','cam1_shots','cam1_moments','cam1_notes',
+  'cam2_pos','cam2_shots','cam2_moments','cam2_notes',
+  'cam3_pos','cam3_shots','cam3_moments','cam3_notes',
+  'f_switcher',
+  'audio_0_src','audio_0_mic','audio_0_notes',
+  'audio_1_src','audio_1_mic','audio_1_notes',
+  'audio_2_src','audio_2_mic','audio_2_notes',
+  'f_audio_risks',
+];
+// Add ref fields dynamically
+for (let i = 0; i < NUM_REFS; i++) {
+  FIELD_IDS.push(`ref_${i}_moment`, `ref_${i}_shot`, `ref_${i}_url`, `ref_${i}_notes`);
+}
+
+// ── STORAGE: namespaced by group name ────────────────────────
+// Each group's data is stored under their group name as the namespace.
+// Different groups on the same device/browser don't overwrite each other.
+// Returning to the page and typing your group name restores your data.
+
+function groupNS() {
+  const g = document.getElementById('metaGroup');
+  const name = (g ? g.value.trim() : '') || '_default';
+  return 'bcm303_' + name.toLowerCase().replace(/\s+/g, '_');
+}
+
+function key(expIdx, fieldId) {
+  return `${groupNS()}_exp${expIdx}_${fieldId}`;
+}
+
+function saveAll() {
+  FIELD_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const val = el.type === 'checkbox' ? el.checked : el.value;
+    localStorage.setItem(key(currentExp, id), val);
+  });
+  flashSaved();
+}
+
+function saveField(el) {
+  const id = el.id;
+  const val = el.type === 'checkbox' ? el.checked : el.value;
+  localStorage.setItem(key(currentExp, id), val);
+  if (id === 'metaMode') updateModeTab();
+  // When group name changes, reload from the new namespace
+  if (id === 'metaGroup') {
+    loadExp(currentExp);
+    updateAllModeTabs();
+  }
+  flashSaved();
+}
+
+function saveMeta() {
+  const m = document.getElementById('metaMode');
+  const w = document.getElementById('metaWeek');
+  if (m) localStorage.setItem(key(currentExp, 'metaMode'), m.value);
+  if (w) localStorage.setItem(key(currentExp, 'metaWeek'), w.value);
+  updateModeTab();
+  flashSaved();
+}
+
+function loadExp(expIdx) {
+  const groupEl = document.getElementById('metaGroup');
+  const currentGroup = groupEl ? groupEl.value : '';
+  FIELD_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    // Don't overwrite the group field itself when loading
+    if (id === 'metaGroup') return;
+    const val = localStorage.getItem(key(expIdx, id));
+    if (val === null || val === undefined) {
+      // Clear field when switching to empty namespace
+      if (el.type === 'checkbox') el.checked = false;
+      else el.value = '';
+      return;
+    }
+    if (el.type === 'checkbox') el.checked = val === 'true';
+    else el.value = val;
+  });
+  for (let i = 0; i < NUM_REFS; i++) {
+    const urlEl = document.getElementById(`ref_${i}_url`);
+    if (urlEl && urlEl.value) loadRefImage(i, urlEl.value);
+  }
+  autoResizeAll();
+}
+
+// ── EXPERIMENT SWITCHER ───────────────────────────────────────
+function switchExp(idx) {
+  currentExp = idx;
+  document.querySelectorAll('.exp-tab').forEach((t, i) => {
+    t.classList.toggle('active', i === idx);
+  });
+  loadExp(idx);
+  updateAllModeTabs();
+}
+
+function updateModeTab() {
+  const m = document.getElementById('metaMode');
+  if (!m) return;
+  const modeEl = document.getElementById(`expMode${currentExp}`);
+  if (modeEl) modeEl.textContent = m.value || '—';
+}
+
+function updateAllModeTabs() {
+  for (let i = 0; i < 3; i++) {
+    const stored = i === currentExp
+      ? (document.getElementById('metaMode')?.value || '')
+      : (localStorage.getItem(key(i, 'metaMode')) || '');
+    const el = document.getElementById(`expMode${i}`);
+    if (el) el.textContent = stored || '—';
+  }
+}
+
+// ── SAVE INDICATOR ────────────────────────────────────────────
+let flashTimer;
+function flashSaved() {
+  const el = document.getElementById('saveIndicator');
+  el.textContent = 'saved';
+  el.classList.add('saved');
+  clearTimeout(flashTimer);
+  flashTimer = setTimeout(() => {
+    el.textContent = '—';
+    el.classList.remove('saved');
+  }, 1800);
+}
+
+// ── REFERENCE CARDS ───────────────────────────────────────────
+function buildRefGrid() {
+  const grid = document.getElementById('refGrid');
+  grid.innerHTML = '';
+  for (let i = 0; i < NUM_REFS; i++) {
+    grid.innerHTML += `
+      <div class="ref-card">
+        <div class="ref-card-preview" id="refPreview${i}">
+          <img id="refImg${i}" src="" alt="">
+          <div class="no-image" id="refNoImg${i}">paste URL below →</div>
+        </div>
+        <div class="ref-card-body">
+          <input type="text" id="ref_${i}_moment" placeholder="Moment: e.g. opening shot" oninput="saveField(this)">
+          <input type="text" id="ref_${i}_shot" placeholder="Shot: e.g. Cam 2, wide 2-shot" oninput="saveField(this)">
+          <input type="text" id="ref_${i}_url" class="ref-url" placeholder="Image URL — paste to load preview" oninput="saveField(this); loadRefImage(${i}, this.value)">
+          <textarea id="ref_${i}_notes" placeholder="Notes on the framing / mood" style="min-height:36px;font-size:11px" oninput="saveField(this)"></textarea>
+        </div>
+      </div>`;
+  }
+}
+
+function loadRefImage(i, url) {
+  const img = document.getElementById(`refImg${i}`);
+  const noImg = document.getElementById(`refNoImg${i}`);
+  if (!img || !url.trim()) return;
+  img.onload = () => { img.classList.add('loaded'); noImg.style.display = 'none'; };
+  img.onerror = () => { img.classList.remove('loaded'); noImg.style.display = ''; };
+  img.src = url.trim();
+}
+
+// ── AUTO-RESIZE TEXTAREAS ─────────────────────────────────────
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.max(el.scrollHeight, 48) + 'px';
+}
+function autoResizeAll() {
+  document.querySelectorAll('textarea').forEach(autoResize);
+}
+document.addEventListener('input', e => {
+  if (e.target.tagName === 'TEXTAREA') autoResize(e.target);
+});
+
+
+// ── INSTRUCTION PANEL ─────────────────────────────────────────
+function toggleInstr() {
+  const panel = document.getElementById('instrPanel');
+  panel.classList.toggle('open');
+  localStorage.setItem('bcm303_instr_seen', panel.classList.contains('open') ? 'open' : 'closed');
+}
+function dismissInstr() {
+  const panel = document.getElementById('instrPanel');
+  panel.classList.remove('open');
+  localStorage.setItem('bcm303_instr_dismissed', 'true');
+}
+function initInstrPanel() {
+  const panel = document.getElementById('instrPanel');
+  const dismissed = localStorage.getItem('bcm303_instr_dismissed');
+  const state = localStorage.getItem('bcm303_instr_seen');
+  if (dismissed === 'true') return; // stay closed
+  if (state === 'open' || !state) panel.classList.add('open'); // open by default first visit
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  buildRefGrid();
+  loadExp(0);
+  updateAllModeTabs();
+  autoResizeAll();
+  initInstrPanel();
+});
+
+// Autosave on any change
+document.addEventListener('change', saveAll);
+</script>
+</body>
+</html>
