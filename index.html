@@ -521,7 +521,8 @@
 
     /* Hide all UI chrome */
     .exp-bar, .btn-print, .btn-add-row,
-    .mode-btn, .modal-overlay { display: none !important; }
+    .mode-btn, .modal-overlay,
+    .tt-btn, .tt-pop, #guidedPanel, #btnGuided { display: none !important; }
 
     /* App header prints in both versions */
     .app-header {
@@ -945,6 +946,272 @@
   .ref-upload-input { display: none; }
   @media print { .ref-upload-label, .ref-upload-input { display: none !important; } }
 
+
+  /* ── TOOLTIPS ─────────────────────────────────────────────── */
+  .tt {
+    display: inline;
+    position: relative;
+  }
+  .tt-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--rule);
+    color: var(--mid);
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    margin-left: 4px;
+    vertical-align: middle;
+    flex-shrink: 0;
+    line-height: 1;
+    position: relative;
+    top: -1px;
+    transition: background 0.15s;
+  }
+  .tt-btn:hover { background: var(--mid); color: white; }
+  .tt-pop {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 0;
+    width: 220px;
+    background: var(--ink);
+    color: white;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.5;
+    padding: 8px 10px;
+    border-radius: var(--radius);
+    z-index: 200;
+    pointer-events: none;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .tt-pop.active { display: block; }
+  .tt-pop::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 12px;
+    border: 5px solid transparent;
+    border-top-color: var(--ink);
+  }
+
+  /* ── GUIDED MODE ───────────────────────────────────────────── */
+  #guidedPanel {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: white;
+    z-index: 150;
+    flex-direction: column;
+  }
+  #guidedPanel.active { display: flex; }
+  .gp-header {
+    background: var(--ink);
+    color: white;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .gp-header h1 {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .gp-header-right {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .gp-btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 7px 14px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: none;
+    color: white;
+    transition: all 0.15s;
+  }
+  .gp-btn:hover { background: rgba(255,255,255,0.15); }
+  .gp-btn.primary {
+    background: white;
+    color: var(--ink);
+    border-color: white;
+  }
+  .gp-btn.primary:hover { background: #eee; }
+  .gp-progress {
+    background: var(--bg);
+    border-bottom: 1px solid var(--rule);
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .gp-progress-bar {
+    flex: 1;
+    height: 3px;
+    background: var(--rule);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .gp-progress-fill {
+    height: 100%;
+    background: var(--ink);
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+  .gp-progress-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--dim);
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+  }
+  .gp-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 36px 40px 24px;
+    max-width: 680px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .gp-section-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--dim);
+    margin-bottom: 8px;
+  }
+  .gp-label {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+  .gp-hint {
+    font-size: 13px;
+    color: var(--mid);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  .gp-input {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1.5px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.6;
+    resize: vertical;
+    min-height: 100px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .gp-input:focus { border-color: var(--ink); }
+  .gp-complex-note {
+    border: 1.5px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    background: var(--bg);
+    font-size: 13px;
+    color: var(--mid);
+    line-height: 1.6;
+  }
+  .gp-complex-note strong { color: var(--ink); display: block; margin-bottom: 6px; font-size: 14px; }
+  .gp-crew-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .gp-crew-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .gp-crew-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--mid);
+    width: 130px;
+    flex-shrink: 0;
+  }
+  .gp-crew-input {
+    flex: 1;
+    border: none;
+    border-bottom: 1.5px solid var(--rule);
+    padding: 6px 2px;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink);
+    background: none;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .gp-crew-input:focus { border-color: var(--ink); }
+  .gp-footer {
+    border-top: 1px solid var(--rule);
+    padding: 16px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    background: white;
+  }
+  .gp-nav {
+    display: flex;
+    gap: 10px;
+  }
+  .gp-nav-btn {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 9px 20px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .gp-nav-back {
+    background: none;
+    border: 1px solid var(--rule);
+    color: var(--mid);
+  }
+  .gp-nav-back:hover { border-color: var(--mid); color: var(--ink); }
+  .gp-nav-next {
+    background: var(--ink);
+    border: 1px solid var(--ink);
+    color: white;
+  }
+  .gp-nav-next:hover { background: #333; }
 </style>
 </head>
 <body>
@@ -974,6 +1241,7 @@
     <span class="exp-mode" id="expMode3">Platform</span>
   </button>
   <div class="exp-bar-spacer"></div>
+  <button id="btnGuided" class="btn-print btn-print-blank" onclick="enterGuided()">Guide me →</button>
   <button class="btn-print btn-print-blank" onclick="printBlankForm()">Print blank form</button>
   <button class="btn-print" onclick="window.print()">Print / PDF</button>
 </div>
@@ -1107,11 +1375,12 @@
 
   <!-- LOGLINE -->
   <div class="section">
-    <div class="section-head"><h3>Logline</h3></div>
+    <div class="section-head"><h3>Logline<button class="tt-btn" onclick="toggleTip(this)" aria-label="What is Logline?">?</button><span class="tt-pop">A logline is one sentence that tells you what happens and why it matters. If you can write it clearly, you know what your segment is.</span></h3></div>
     <div class="section-body">
       <div class="field">
         <label>One sentence: what happens in this segment, and why would someone outside this room care?</label>
         <div class="hint">If you can't write this, you don't know what your segment is yet. That's the conversation to have now.</div>
+        <div class="hint" style="margin-top:4px;border-left:2px solid var(--rule);padding-left:8px;">Does this segment draw on the creative and cultural life of this community — and how does it give something back?</div>
         <textarea id="f_logline" rows="2" class="short" oninput="saveField(this)"></textarea>
       </div>
       <div class="field">
@@ -1168,7 +1437,7 @@
 
   <!-- PLATFORM -->
   <div class="section">
-    <div class="section-head"><h3>Platform Mode — if applicable</h3></div>
+    <div class="section-head"><h3>Platform Mode<button class="tt-btn" onclick="toggleTip(this)" aria-label="What is Platform Mode?">?</button><span class="tt-pop">Platform means your segment gives a real person or community from outside the room a stage. The relationship with them is built before the studio — it's the work, not the setup.</span></h3></div>
     <div class="section-body">
       <p style="font-size:12px;color:var(--dim);font-style:italic;margin-bottom:14px;">The pre-session relationship is the work. If it hasn't happened yet, Platform cannot happen in the studio session.</p>
       <div class="platform-box">
@@ -1202,8 +1471,8 @@
           <tr><th style="width:200px">Role</th><th>Name + brief note</th></tr>
         </thead>
         <tbody id="crewBody">
-          <tr><td class="crew-role">Floor director</td><td><input type="text" id="crew_fd" oninput="saveField(this)"></td></tr>
-          <tr><td class="crew-role">Technical director</td><td><input type="text" id="crew_td" oninput="saveField(this)"></td></tr>
+          <tr><td class="crew-role">Floor director<button class="tt-btn" onclick="toggleTip(this)" aria-label="What is Floor director?">?</button><span class="tt-pop">The floor director is the link between the control room and the studio. They relay the director's calls to the talent and crew in the room, and manage timing.</span></td><td><input type="text" id="crew_fd" oninput="saveField(this)"></td></tr>
+          <tr><td class="crew-role">Technical director<button class="tt-btn" onclick="toggleTip(this)" aria-label="What is Technical director?">?</button><span class="tt-pop">The technical director operates the vision switcher — they cut between cameras on the director's calls and manage what goes to air.</span></td><td><input type="text" id="crew_td" oninput="saveField(this)"></td></tr>
           <tr><td class="crew-role">Camera 1</td><td><input type="text" id="crew_c1" oninput="saveField(this)"></td></tr>
           <tr><td class="crew-role">Camera 2</td><td><input type="text" id="crew_c2" oninput="saveField(this)"></td></tr>
           <tr><td class="crew-role">Camera 3</td><td><input type="text" id="crew_c3" oninput="saveField(this)"></td></tr>
@@ -1212,6 +1481,19 @@
         </tbody>
       </table>
     </div>
+  </div>
+
+  <div class="notice" style="background:var(--phase1-light);border-left:3px solid var(--ink);margin-bottom:8px;">
+    <strong>Couch conversation →</strong>
+    <p>Use this form to prepare a two-minute conversation on the couch — one person hosts, the others speak from the brief. Talk it through in your group first, then take the couch.</p>
+    <p style="margin-top:6px;">Four questions your host will ask:</p>
+    <ol style="margin:6px 0 0 16px;font-size:12px;color:var(--mid);line-height:1.8;">
+      <li>What's the segment — what actually happens?</li>
+      <li>How does it meet the Charter?</li>
+      <li>Where did this come from — what's your group's real connection to it?</li>
+      <li>Who would watch this, and why would they be engaged?</li>
+    </ol>
+    <p style="margin-top:6px;">Your logline answers the first. The authority and stakes fields answer the third and fourth. If the answers feel thin here, they'll feel thin on the couch.</p>
   </div>
 
   <div class="notice">
@@ -1302,7 +1584,7 @@
         </table>
       </div>
       <div class="field" style="margin-top:12px">
-        <label>Switcher notes — default cut rhythm; moments that need a hold</label>
+        <label>Switcher<button class="tt-btn" onclick="toggleTip(this)" aria-label="What is Switcher?">?</button><span class="tt-pop">The switcher is the device (and the person operating it) that selects which camera is live at any moment. Your technical director sits at it and cuts between cameras on your calls.</span> notes — default cut rhythm; moments that need a hold</label>
         <textarea id="f_switcher" class="short" oninput="saveField(this)"></textarea>
       </div>
     </div>
@@ -1324,7 +1606,7 @@
             </tr>
           </thead>
           <tbody id="audioBody">
-            <tr class="audio-group-head"><td colspan="3">Live sources — voices, instruments, room</td></tr>
+            <tr class="audio-group-head"><td colspan="3">Live sources<button class="tt-btn" onclick="toggleTip(this)" aria-label="What is Live sources?">?</button><span class="tt-pop">Anything making sound in the room right now — a microphone on a person, a guitar being played, room sound.</span></td></tr>
             <tr>
               <td><textarea id="audio_0_src" placeholder="e.g. interview guest" oninput="saveField(this)"></textarea></td>
               <td><textarea id="audio_0_mic" placeholder="e.g. lapel mic" oninput="saveField(this)"></textarea></td>
@@ -1345,7 +1627,7 @@
               <td><textarea id="audio_3_mic" oninput="saveField(this)"></textarea></td>
               <td><textarea id="audio_3_notes" oninput="saveField(this)"></textarea></td>
             </tr>
-            <tr class="audio-group-head"><td colspan="3">Played-in sources — music, VTs, sound effects, playback</td></tr>
+            <tr class="audio-group-head"><td colspan="3">Played-in sources<button class="tt-btn" onclick="toggleTip(this)" aria-label="What is Played-in sources?">?</button><span class="tt-pop">Audio that's pre-recorded and played into the mix — a music bed, a sound effect, a video clip's audio. These need to be original or cleared by the rights holder.</span> — music, VTs, sound effects, playback</td></tr>
             <tr>
               <td><textarea id="audio_4_src" placeholder="e.g. intro music" oninput="saveField(this)"></textarea></td>
               <td><textarea id="audio_4_mic" placeholder="e.g. laptop → audio board" oninput="saveField(this)"></textarea></td>
@@ -1361,8 +1643,8 @@
       </div>
 
       <div class="field" style="margin-top:16px">
-        <label>Recorded media &amp; assets in the switcher</label>
-        <p style="font-size:12px;color:var(--dim);font-style:italic;margin-bottom:8px;">Anything that isn't a live camera — VTs, title sequences, lower thirds, graphics, stingers. Who loads it, who calls it, when does it run?</p>
+        <label>Recorded media &amp; assets in the switcher<button class="tt-btn" onclick="toggleTip(this)" aria-label="What is switcher?">?</button><span class="tt-pop">The switcher can also play pre-recorded content — title cards, lower thirds, graphics — alongside the live cameras.</span></label>
+        <p style="font-size:12px;color:var(--dim);font-style:italic;margin-bottom:8px;">Anything that isn't a live camera — VTs<button class="tt-btn" onclick="toggleTip(this)" aria-label="What is VTs?">?</button><span class="tt-pop">VT = video tape. Now means any pre-recorded video clip played into the broadcast.</span>, title sequences, lower thirds<button class="tt-btn" onclick="toggleTip(this)" aria-label="What is lower thirds?">?</button><span class="tt-pop">Lower thirds are text overlays at the bottom of frame — names, titles, captions.</span>, graphics, stingers<button class="tt-btn" onclick="toggleTip(this)" aria-label="What is stingers?">?</button><span class="tt-pop">Stingers are short audio or animated transitions — brief sounds or flashes between segments.</span>. Who loads it, who calls it, when does it run?</p>
         <textarea id="f_assets" oninput="saveField(this)" placeholder="e.g. Title card (static graphic): loaded in Mitti, TD calls at segment open. Outro music bed (original or cleared track, WAV file): loaded in Mitti, operator fades in at segment close. Streaming services and commercial recordings are subject to copyright law — automated enforcement can mute or interrupt the stream."></textarea>
       </div>
 
@@ -1372,7 +1654,7 @@
 
   <!-- SCRIPTING -->
   <div class="section">
-    <div class="section-head"><h3>Running Order</h3></div>
+    <div class="section-head"><h3>Running Order<button class="tt-btn" onclick="toggleTip(this)" aria-label="What is Running Order?">?</button><span class="tt-pop">A numbered list of everything that happens in your segment, in sequence — who does what, when, and what triggers each move.</span></h3></div>
     <div class="section-body">
       <div class="field">
         <label>What happens, in sequence — and who does what?</label>
@@ -1782,6 +2064,256 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// ── TOOLTIPS ──────────────────────────────────────────────────
+function toggleTip(btn) {
+  const pop = btn.nextElementSibling;
+  const isOpen = pop.classList.contains('active');
+  // Close all open tooltips first
+  document.querySelectorAll('.tt-pop.active').forEach(p => p.classList.remove('active'));
+  if (!isOpen) pop.classList.add('active');
+}
+document.addEventListener('click', e => {
+  if (!e.target.classList.contains('tt-btn')) {
+    document.querySelectorAll('.tt-pop.active').forEach(p => p.classList.remove('active'));
+  }
+});
+
+// ── GUIDED MODE ───────────────────────────────────────────────
+const GUIDED_STEPS = [
+  // ── PART 1 ──
+  { part: 'Part 1 — The segment brief',
+    label: 'What is your segment about?',
+    hint: 'Write one sentence. What actually happens, and why would someone who doesn\'t know you care? Struggle to write this? That means you haven\'t agreed what the segment is yet — that\'s the conversation to have now.',
+    id: 'f_logline', type: 'textarea' },
+
+  { part: 'Part 1 — The segment brief',
+    label: 'What\'s new about this version?',
+    hint: 'If this is your first experiment, write "First time." If you\'ve done this segment before, say what\'s different — one or two sentences.',
+    id: 'f_logline_delta', type: 'textarea' },
+
+  { part: 'Part 1 — The segment brief',
+    label: 'How does the segment run?',
+    hint: 'Beginning, middle, end — three sentences maximum. What happens first, what happens in the middle, how does it close?',
+    id: 'f_segment', type: 'textarea' },
+
+  { part: 'Part 1 — The segment brief',
+    label: 'What are you genuinely trying to find out?',
+    hint: 'Not "whether it works." A real question your experiment needs to answer — something you don\'t already know. Write it as a question.',
+    id: 'f_question', type: 'textarea' },
+
+  // Authority & Relationship
+  { part: 'Part 1 — Authority & relationship',
+    label: 'Where does the right to make this come from?',
+    hint: 'Is the authority inside your group, or does it belong to someone outside the room? If it\'s outside — a community, a person, a practice — what\'s your relationship to it?',
+    id: 'f_authority', type: 'textarea' },
+
+  { part: 'Part 1 — Authority & relationship',
+    label: 'Is this segment for someone, or about them?',
+    hint: 'Is there a real person or community outside this room who would recognise themselves in it? If yes — are you making it for them, or about them? What\'s the difference in your case?',
+    id: 'f_forabout', type: 'textarea' },
+
+  { part: 'Part 1 — Authority & relationship',
+    label: 'Who are you making this for?',
+    hint: 'Name the audience. Local young people? Students in this room? The person you\'re featuring? Be specific.',
+    id: 'f_for', type: 'textarea' },
+
+  { part: 'Part 1 — Authority & relationship',
+    label: 'What changes by the end?',
+    hint: 'For the person featured, for the audience, for the room. What\'s actually at stake? If nothing changes, it\'s not a segment yet.',
+    id: 'f_stakes', type: 'textarea' },
+
+  // Platform
+  { part: 'Part 1 — Platform mode (if applicable)',
+    label: 'Who are you working with, and what are they bringing?',
+    hint: 'If your segment is Platform mode, name your collaborator and describe what they\'re contributing. If you\'re not using Platform mode for this experiment, leave this blank and move on.',
+    id: 'f_collab_who', type: 'textarea' },
+
+  { part: 'Part 1 — Platform mode (if applicable)',
+    label: 'Have they been briefed?',
+    hint: 'Have you told them: it\'s a live stream, there\'ll be a studio crew, this is what you\'re asking of them? This conversation must happen before the studio session — not during it.',
+    id: 'f_collab_brief', type: 'textarea' },
+
+  // Crew
+  { part: 'Part 1 — Crew',
+    label: 'Who in your group is doing what?',
+    hint: 'Assign roles provisionally. You\'ll also have crew from the rest of the class — focus on who in your group takes each key role.',
+    type: 'crew' },
+
+  // ── PART 2 ──
+  { part: 'Part 2 — Set & staging',
+    label: 'What does the studio space need to feel like?',
+    hint: 'The studio is a blank room. Pick one word — intimate, exposed, formal, bare, casual — and justify it. What feeling are you trying to produce for the audience?',
+    id: 'f_feel', type: 'textarea' },
+
+  { part: 'Part 2 — Set & staging',
+    label: 'What do you need in the room?',
+    hint: 'List the physical things: furniture, objects, backdrop, props. Be specific — "two stools" not "seating." Nothing decorative unless it\'s doing something.',
+    id: 'f_props', type: 'textarea' },
+
+  { part: 'Part 2 — Set & staging',
+    label: 'Where do your performers or guests go?',
+    hint: 'Describe where people stand or sit relative to the cameras. Is the performer centred? Stage left? Angled toward the host? Movement needs to be planned, not improvised.',
+    id: 'f_positions', type: 'textarea' },
+
+  { part: 'Part 2 — Set & staging',
+    label: 'Where is the audience?',
+    hint: 'Where do they sit, and what role do they play in frame? In Participation mode, the audience is the content — this question and the one above reverse.',
+    id: 'f_audience', type: 'textarea' },
+
+  // Camera — complex
+  { part: 'Part 2 — Camera plan',
+    label: 'Camera plan',
+    hint: 'Three cameras. Each one needs a position, a primary shot, the key moments it covers, and notes for the operator. This is best filled in the full form where you can see the table.',
+    type: 'complex',
+    note: 'The camera plan has three rows — one per camera. Each needs: where it sits in the studio, what shot it\'s holding, which moments it covers, and notes for the operator. Tap "See full form" to fill this in.' },
+
+  { part: 'Part 2 — Camera plan',
+    label: 'Switcher notes',
+    hint: 'What\'s the default cut rhythm? Where do you need to hold longer than feels comfortable? Write this for the person operating the switcher.',
+    id: 'f_switcher', type: 'textarea' },
+
+  // Audio — complex
+  { part: 'Part 2 — Audio',
+    label: 'Audio plan',
+    hint: 'List every sound source — voices, instruments, music beds — with how it\'s being picked up and any risks. This is best filled in the full form where you can see the table.',
+    type: 'complex',
+    note: 'The audio table has two sections: live sources (microphones, instruments in the room) and played-in sources (pre-recorded music or audio). For each source, you\'ll note the pickup method and any risks. Tap "See full form" to fill this in.' },
+
+  { part: 'Part 2 — Audio',
+    label: 'Recorded media and assets',
+    hint: 'Anything that isn\'t a live camera — title cards, lower-third name labels, graphic overlays, a music bed at the end. Who loads it, who calls it, when does it run?',
+    id: 'f_assets', type: 'textarea' },
+
+  { part: 'Part 2 — Running order',
+    label: 'What happens, in sequence?',
+    hint: 'Number each beat. Write what\'s scripted and what\'s improvised, what triggers each transition, and what each key person is doing. Make it clear enough that any crew member can follow it without asking questions.',
+    id: 'f_script_runorder', type: 'textarea' },
+
+  // Key moments — complex
+  { part: 'Part 2 — Key moments & borrowed looks',
+    label: 'Key moments and reference images',
+    hint: 'For each key moment, find a still from an actual broadcast that shows a specific camera or staging decision you want to borrow. Not a mood — a decision. This is best filled in the full form.',
+    type: 'complex',
+    note: 'Find a screenshot from a real broadcast or show for each key moment — something that demonstrates a specific framing or staging decision. Paste the image URL in the full form and describe the decision in the notes field. Tap "See full form" to fill these in.' },
+];
+
+let guidedStep = 0;
+
+function enterGuided() {
+  // Save current field if any before entering
+  guidedStep = 0;
+  renderGuidedStep();
+  document.getElementById('guidedPanel').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function exitGuided() {
+  document.getElementById('guidedPanel').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function showExample() {
+  exitGuided();
+  switchExp(IS_EXAMPLE);
+}
+
+function guidedNav(dir) {
+  saveGuidedField();
+  const next = guidedStep + dir;
+  if (next < 0 || next >= GUIDED_STEPS.length) return;
+  guidedStep = next;
+  renderGuidedStep();
+}
+
+function saveGuidedField() {
+  const step = GUIDED_STEPS[guidedStep];
+  if (step.type === 'textarea' && step.id) {
+    const inp = document.getElementById('gp_input');
+    const real = document.getElementById(step.id);
+    if (inp && real) {
+      real.value = inp.value;
+      saveField(real);
+    }
+  } else if (step.type === 'crew') {
+    ['crew_fd','crew_td','crew_c1','crew_c2','crew_c3','crew_audio','crew_other'].forEach(id => {
+      const inp = document.getElementById('gp_' + id);
+      const real = document.getElementById(id);
+      if (inp && real) { real.value = inp.value; saveField(real); }
+    });
+  }
+}
+
+function renderGuidedStep() {
+  const step = GUIDED_STEPS[guidedStep];
+  const total = GUIDED_STEPS.length;
+
+  // Progress
+  document.getElementById('gpProgressLabel').textContent = `Step ${guidedStep + 1} of ${total}`;
+  document.getElementById('gpProgressFill').style.width = `${((guidedStep + 1) / total) * 100}%`;
+
+  // Back button
+  document.getElementById('gpBack').style.visibility = guidedStep === 0 ? 'hidden' : 'visible';
+
+  // Next button label
+  document.getElementById('gpNext').textContent = guidedStep === total - 1 ? 'Done ✓' : 'Next →';
+  if (guidedStep === total - 1) {
+    document.getElementById('gpNext').onclick = () => { saveGuidedField(); exitGuided(); };
+  } else {
+    document.getElementById('gpNext').onclick = () => guidedNav(1);
+  }
+
+  // Body
+  const body = document.getElementById('gpBody');
+  let html = `<div class="gp-section-tag">${step.part}</div>
+<div class="gp-label">${step.label}</div>
+<div class="gp-hint">${step.hint}</div>`;
+
+  if (step.type === 'textarea') {
+    const real = document.getElementById(step.id);
+    const val = real ? (real.value || '') : '';
+    html += `<textarea class="gp-input" id="gp_input" rows="5">${val}</textarea>`;
+  } else if (step.type === 'crew') {
+    const roles = [
+      { id: 'crew_fd', label: 'Floor director' },
+      { id: 'crew_td', label: 'Technical director' },
+      { id: 'crew_c1', label: 'Camera 1' },
+      { id: 'crew_c2', label: 'Camera 2' },
+      { id: 'crew_c3', label: 'Camera 3' },
+      { id: 'crew_audio', label: 'Audio' },
+      { id: 'crew_other', label: 'Other' },
+    ];
+    html += `<div class="gp-crew-grid">`;
+    roles.forEach(r => {
+      const real = document.getElementById(r.id);
+      const val = real ? (real.value || '') : '';
+      html += `<div class="gp-crew-row">
+  <span class="gp-crew-label">${r.label}</span>
+  <input type="text" class="gp-crew-input" id="gp_${r.id}" value="${val.replace(/"/g,'&quot;')}" placeholder="Name — brief note">
+</div>`;
+    });
+    html += `</div>`;
+  } else if (step.type === 'complex') {
+    html += `<div class="gp-complex-note"><strong>This section uses a table in the full form.</strong>${step.note} <br><br><button class="gp-btn primary" style="color:var(--ink);border-color:var(--ink);background:white;margin-top:4px" onclick="exitGuided()">Open full form →</button></div>`;
+  }
+
+  body.innerHTML = html;
+
+  // Auto-resize textarea
+  if (step.type === 'textarea') {
+    const ta = document.getElementById('gp_input');
+    if (ta) {
+      ta.addEventListener('input', () => { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; });
+      ta.style.height = 'auto';
+      ta.style.height = Math.max(ta.scrollHeight, 100) + 'px';
+      setTimeout(() => ta.focus(), 50);
+    }
+  }
+
+  // Scroll body to top
+  body.scrollTop = 0;
+}
+
+
 // ── INIT ──────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   buildRefGrid();
@@ -1796,3 +2328,27 @@ document.addEventListener('change', saveAll);
 </script>
 </body>
 </html>
+<!-- ═══ GUIDED MODE PANEL ══════════════════════════════════════ -->
+<div id="guidedPanel">
+  <div class="gp-header">
+    <h1>BCM303 — Segment Brief</h1>
+    <div class="gp-header-right">
+      <button class="gp-btn" onclick="showExample()">See example ↗</button>
+      <button class="gp-btn primary" onclick="exitGuided()">See full form</button>
+    </div>
+  </div>
+  <div class="gp-progress">
+    <span class="gp-progress-label" id="gpProgressLabel">Step 1 of 20</span>
+    <div class="gp-progress-bar"><div class="gp-progress-fill" id="gpProgressFill" style="width:5%"></div></div>
+  </div>
+  <div class="gp-body" id="gpBody"></div>
+  <div class="gp-footer">
+    <div class="gp-nav">
+      <button class="gp-nav-btn gp-nav-back" id="gpBack" onclick="guidedNav(-1)">← Back</button>
+      <button class="gp-nav-btn gp-nav-next" id="gpNext" onclick="guidedNav(1)">Next →</button>
+    </div>
+    <button class="gp-btn" style="color:var(--dim);border-color:var(--rule);font-size:11px" onclick="exitGuided()">Exit guide</button>
+  </div>
+</div>
+
+
